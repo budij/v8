@@ -1,16 +1,13 @@
 include(ExternalProject)
 
 set(V8ProjectName project_V8)
-set(V8SourceDir ${CMAKE_CURRENT_BINARY_DIR}/V8-source)
-set(V8BuildDir ${CMAKE_CURRENT_BINARY_DIR}/V8-build)
+set(V8Dir ${V8SourceDir}/v8)
 set(V8InstallDir ${CMAKE_INSTALL_PREFIX})
-set(V8Url "https://github.com/V8/V8.git")
-set(V8Tag "ac0d7ce")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-   set(BuildType "Debug")
+   set(BuildType debug)
 else()
-   set(BuildType "Release")
+   set(BuildType release)
 endif()
 
 ExternalProject_Add(
@@ -24,4 +21,53 @@ ExternalProject_Add(
    INSTALL_COMMAND ""
    INSTALL_DIR ${V8InstallDir}
    UPDATE_COMMAND ""
+)
+
+ExternalProject_Add_Step(
+   ${V8ProjectName}
+   fetch_v8
+   COMMAND ${DepotToolsLocation}/fetch v8
+   COMMENT "Download source code"
+   WORKING_DIRECTORY ${V8SourceDir}
+   DEPENDERS download
+)
+
+ExternalProject_Add_Step(
+   ${V8ProjectName}
+   sync_client
+   COMMAND ${DepotToolsLocation}/gclient sync
+   COMMENT "Make sure that the source code is the latest"
+   WORKING_DIRECTORY ${V8Dir}
+   DEPENDEES download
+   DEPENDERS configure
+)
+
+ExternalProject_Add_Step(
+   ${V8ProjectName}
+   generate_build_script
+   COMMAND python tools/dev/v8gen.py x64.${BuildType}
+   COMMENT "Generate build script"
+   WORKING_DIRECTORY ${V8Dir}
+   DEPENDEES sync_client
+   DEPENDERS configure
+)
+
+ExternalProject_Add_Step(
+   ${V8ProjectName}
+   set_dynamic_lib_build
+   COMMAND echo is_component_build = true >> out.gn/x64.${BuildType}/args.gn 
+   COMMENT "Set the build so that it is a library build"
+   WORKING_DIRECTORY ${V8Dir}
+   DEPENDEES generate_build_script
+   DEPENDERS configure
+)
+
+ExternalProject_Add_Step(
+   ${V8ProjectName}
+   v8_build
+   COMMAND ${DepotToolsLocation}/ninja -C out.gn/x64.${BuildType}
+   COMMENT "Build v8 engine"
+   WORKING_DIRECTORY ${V8Dir}
+   DEPENDEES configure
+   DEPENDERS build
 )
