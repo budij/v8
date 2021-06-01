@@ -62,22 +62,22 @@ ExternalProject_Add_Step(
 #   DEPENDERS configure
 #)
 
-#ExternalProject_Add_Step(
-#   ${V8ProjectName}
-#   v8_build
-#   COMMAND ${DepotToolsLocation}/ninja -C out.gn/x64.${BuildType}
-#   COMMENT "Build v8 engine"
-#   WORKING_DIRECTORY ${V8Dir}
-#   DEPENDEES configure
-#   DEPENDERS build
-#)
-
 ExternalProject_Add_Step(
    ${V8ProjectName}
    v8_build
-   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} tools/dev/gm.py x64.${BuildType}.check
+   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} ninja -C out.gn/x64.${BuildType}
    COMMENT "Build v8 engine"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES configure
    DEPENDERS build
 )
+
+#ExternalProject_Add_Step(
+#   ${V8ProjectName}
+#   v8_build
+#   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} tools/dev/gm.py x64.${BuildType}.check
+#   COMMENT "Build v8 engine"
+#   WORKING_DIRECTORY ${V8Dir}
+#   DEPENDEES configure
+#   DEPENDERS build
+#)
