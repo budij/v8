@@ -14,7 +14,7 @@ ExternalProject_Add(
    ${V8ProjectName}
    DOWNLOAD_COMMAND ""
    SOURCE_DIR ${V8SourceDir}
-   BINARY_DIR ${V8BuildDir}
+   BINARY_DIR ${V8SourceDir}
    CONFIGURE_COMMAND ""
    BUILD_COMMAND ""
    BUILD_IN_SOURCE 0
@@ -26,7 +26,7 @@ ExternalProject_Add(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    fetch_v8
-   COMMAND ${DepotToolsLocation}/fetch v8
+   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} fetch v8
    COMMENT "Download source code"
    WORKING_DIRECTORY ${V8SourceDir}
    DEPENDERS download
@@ -35,7 +35,7 @@ ExternalProject_Add_Step(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    sync_client
-   COMMAND ${DepotToolsLocation}/gclient sync
+   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} gclient sync
    COMMENT "Make sure that the source code is the latest"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES download
@@ -45,27 +45,37 @@ ExternalProject_Add_Step(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    generate_build_script
-   COMMAND python tools/dev/v8gen.py x64.${BuildType}
+   COMMAND tools/dev/v8gen.py x64.${BuildType} -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true
    COMMENT "Generate build script"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES sync_client
    DEPENDERS configure
 )
 
-ExternalProject_Add_Step(
-   ${V8ProjectName}
-   set_dynamic_lib_build
-   COMMAND echo is_component_build = true >> out.gn/x64.${BuildType}/args.gn 
-   COMMENT "Set the build so that it is a library build"
-   WORKING_DIRECTORY ${V8Dir}
-   DEPENDEES generate_build_script
-   DEPENDERS configure
-)
+#ExternalProject_Add_Step(
+#   ${V8ProjectName}
+#   set_dynamic_lib_build
+#   COMMAND echo is_component_build = true >> out.gn/x64.${BuildType}/args.gn
+#   COMMENT "Set the build so that it is a library build"
+#   WORKING_DIRECTORY ${V8Dir}
+#   DEPENDEES generate_build_script
+#   DEPENDERS configure
+#)
+
+#ExternalProject_Add_Step(
+#   ${V8ProjectName}
+#   v8_build
+#   COMMAND ${DepotToolsLocation}/ninja -C out.gn/x64.${BuildType}
+#   COMMENT "Build v8 engine"
+#   WORKING_DIRECTORY ${V8Dir}
+#   DEPENDEES configure
+#   DEPENDERS build
+#)
 
 ExternalProject_Add_Step(
    ${V8ProjectName}
    v8_build
-   COMMAND ${DepotToolsLocation}/ninja -C out.gn/x64.${BuildType}
+   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} tools/dev/gm.py x64.${BuildType}.check
    COMMENT "Build v8 engine"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES configure
