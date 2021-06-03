@@ -66,12 +66,15 @@ function (copy_binary step_name binary_name directory_name)
    ExternalProject_Add_Step(
       ${V8ProjectName}
       copy_executables_${step_name}
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${V8Dir}/out.gn/x64.${BuildType}/${binary_name} ${V8InstallDir}/${directory_name}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${V8Dir}/out.gn/x64.${BuildType}/${binary_name} ${V8InstallDir}/${directory_name}/${binary_name}
       COMMENT "Copy ${binary_name} to ${directory_name}"
       WORKING_DIRECTORY ${V8Dir}
       DEPENDEES build
    )
 endfunction(copy_binary)
+
+make_directory(${V8InstallDir}/bin)
+make_directory(${V8InstallDir}/lib)
 
 if (APPLE)
    copy_binary(v8_shell v8_shell bin)
@@ -89,5 +92,5 @@ elseif (UNIX)
    copy_binary(libicui18n libicui18n.so lib)
 endif(APPLE)
 
-file(GLOB_RECURSE header_files RELATIVE ${V8Dir}/out.gn/x64.${BuildType}/include ${V8Dir}/out.gn/x64.${BuildType}/*)
-file(COPY ${header_files} DESTINATION ${V8InstallDir}/include)
+file(GLOB_RECURSE header_files RELATIVE ${V8Dir}/out.gn/x64.${BuildType}/include ${V8Dir}/out.gn/x64.${BuildType}/include/*)
+file(COPY ${header_files} DESTINATION ${V8InstallDir}/include/)
