@@ -52,16 +52,6 @@ ExternalProject_Add_Step(
    DEPENDERS configure
 )
 
-#ExternalProject_Add_Step(
-#   ${V8ProjectName}
-#   set_dynamic_lib_build
-#   COMMAND echo is_component_build = true >> out.gn/x64.${BuildType}/args.gn
-#   COMMENT "Set the build so that it is a library build"
-#   WORKING_DIRECTORY ${V8Dir}
-#   DEPENDEES generate_build_script
-#   DEPENDERS configure
-#)
-
 ExternalProject_Add_Step(
    ${V8ProjectName}
    v8_build
@@ -72,12 +62,32 @@ ExternalProject_Add_Step(
    DEPENDERS build
 )
 
-#ExternalProject_Add_Step(
-#   ${V8ProjectName}
-#   v8_build
-#   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} tools/dev/gm.py x64.${BuildType}.check
-#   COMMENT "Build v8 engine"
-#   WORKING_DIRECTORY ${V8Dir}
-#   DEPENDEES configure
-#   DEPENDERS build
-#)
+function (copy_binary step_name binary_name directory_name)
+   ExternalProject_Add_Step(
+      ${V8ProjectName}
+      copy_executables_${step_name}
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${V8Dir}/out.gn/x64.${BuildType}/${binary_name} ${V8InstallDir}/${directory_name}
+      COMMENT "Copy ${binary_name} to ${directory_name}"
+      WORKING_DIRECTORY ${V8Dir}
+      DEPENDEES build
+   )
+endfunction(copy_binary)
+
+if (APPLE)
+   copy_binary(v8_shell v8_shell bin)
+   copy_binary(libv8_libplatform libv8_libplatform.dylib lib)
+   copy_binary(libv8_libbase libv8_libbase.dylib lib)
+   copy_binary(libv8 libv8.dylib lib)
+   copy_binary(libicuuc libicuuc.dylib lib)
+   copy_binary(libicui18n libicui18n.dylib lib)
+elseif (UNIX)
+   copy_binary(v8_shell v8_shell bin)
+   copy_binary(libv8_libplatform libv8_libplatform.so lib)
+   copy_binary(libv8_libbase libv8_libbase.so lib)
+   copy_binary(libv8 libv8.so lib)
+   copy_binary(libicuuc libicuuc.so lib)
+   copy_binary(libicui18n libicui18n.so lib)
+endif(APPLE)
+
+file(GLOB_RECURSE header_files RELATIVE ${V8Dir}/out.gn/x64.${BuildType}/include ${V8Dir}/out.gn/x64.${BuildType}/*)
+file(COPY ${header_files} DESTINATION ${V8InstallDir}/include)
