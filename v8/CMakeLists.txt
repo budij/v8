@@ -21,6 +21,7 @@ ExternalProject_Add(
    INSTALL_COMMAND ""
    INSTALL_DIR ${V8InstallDir}
    UPDATE_COMMAND ""
+   DEPENDS ${DepotToolsProjectName}
 )
 
 ExternalProject_Add_Step(
