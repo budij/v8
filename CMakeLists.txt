@@ -35,6 +35,7 @@ set(DepotToolsProjectName project_depot_tools)
 set(DepotToolsSource ${CMAKE_CURRENT_BINARY_DIR}/dt)
 set(DepotToolsLocation ${DepotToolsSource})
 set(V8SourceDir ${CMAKE_CURRENT_BINARY_DIR}/vs)
+
 if (WIN32)
    set(ENV{PATH} "${DepotToolsLocation};$ENV{PATH}")
 else ()

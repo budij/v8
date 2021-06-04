@@ -24,10 +24,14 @@ ExternalProject_Add(
    DEPENDS ${DepotToolsProjectName}
 )
 
+if (WIN32)
+   set(BatchCommand .bat)
+endif(WIN32)
+
 ExternalProject_Add_Step(
    ${V8ProjectName}
    fetch_v8
-   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} fetch v8
+   COMMAND ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" DEPOT_TOOLS_WIN_TOOLCHAIN=0 "${DepotToolsLocation}/fetch${BatchCommand}" v8
    COMMENT "Download source code"
    WORKING_DIRECTORY ${V8SourceDir}
    DEPENDERS download
@@ -36,7 +40,7 @@ ExternalProject_Add_Step(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    sync_client
-   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} gclient sync
+   COMMAND ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" DEPOT_TOOLS_WIN_TOOLCHAIN=0 "${DepotToolsLocation}/gclient${BatchCommand}" sync
    COMMENT "Make sure that the source code is the latest"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES download
