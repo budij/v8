@@ -75,6 +75,7 @@ endfunction(copy_binary)
 
 make_directory(${V8InstallDir}/bin)
 make_directory(${V8InstallDir}/lib)
+make_directory(${V8InstallDir}/include)
 
 if (APPLE)
    copy_binary(v8_shell v8_shell bin)
@@ -92,5 +93,11 @@ elseif (UNIX)
    copy_binary(libicui18n libicui18n.so lib)
 endif(APPLE)
 
-file(GLOB_RECURSE header_files RELATIVE ${V8Dir}/out.gn/x64.${BuildType}/include ${V8Dir}/out.gn/x64.${BuildType}/include/*)
-file(COPY ${header_files} DESTINATION ${V8InstallDir}/include/)
+ExternalProject_Add_Step(
+   ${V8ProjectName}
+   copy_header_files
+   COMMAND ${CMAKE_COMMAND} -E copy_directory ${V8Dir}/include ${V8InstallDir}/include
+   COMMENT "Copy include files from ${V8Dir}/out.gn/x64.${BuildType}/include to ${V8InstallDir}/include"
+   WORKING_DIRECTORY ${V8Dir}
+   DEPENDEES build
+)
