@@ -33,7 +33,7 @@ else()
    set(FetchCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/fetch" v8)
    set(SyncCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/gclient" sync)
    set(GenerateBuildScriptCommand tools/dev/v8gen.py x64.${BuildType} -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true)
-   set(BuildCommand ${CMAKE_COMMAND} -E env ninja -C out.gn/x64.${BuildType})
+   set(BuildCommand ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} ninja -C out.gn/x64.${BuildType})
 endif(WIN32)
 
 ExternalProject_Add_Step(
