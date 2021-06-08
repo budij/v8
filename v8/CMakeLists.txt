@@ -25,13 +25,21 @@ ExternalProject_Add(
 )
 
 if (WIN32)
-   set(BatchCommand .bat)
+   set(FetchCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/fetch.bat v8")
+   set(SyncCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/gclient.bat sync")
+   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true")
+   set(BuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/ninja.exe -C out.gn/x64.${BuildType}")
+else()
+   set(FetchCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/fetch" v8)
+   set(SyncCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/gclient" sync)
+   set(GenerateBuildScriptCommand tools/dev/v8gen.py x64.${BuildType} -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true)
+   set(BuildCommand ${CMAKE_COMMAND} -E env ninja -C out.gn/x64.${BuildType})
 endif(WIN32)
 
 ExternalProject_Add_Step(
    ${V8ProjectName}
    fetch_v8
-   COMMAND ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" DEPOT_TOOLS_WIN_TOOLCHAIN=0 "${DepotToolsLocation}/fetch${BatchCommand}" v8
+   COMMAND ${FetchCommand}
    COMMENT "Download source code"
    WORKING_DIRECTORY ${V8SourceDir}
    DEPENDERS download
@@ -40,7 +48,7 @@ ExternalProject_Add_Step(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    sync_client
-   COMMAND ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" DEPOT_TOOLS_WIN_TOOLCHAIN=0 "${DepotToolsLocation}/gclient${BatchCommand}" sync
+   COMMAND ${SyncCommand}
    COMMENT "Make sure that the source code is the latest"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES download
@@ -50,7 +58,7 @@ ExternalProject_Add_Step(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    generate_build_script
-   COMMAND tools/dev/v8gen.py x64.${BuildType} -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true
+   COMMAND ${GenerateBuildScriptCommand}
    COMMENT "Generate build script"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES sync_client
@@ -60,7 +68,7 @@ ExternalProject_Add_Step(
 ExternalProject_Add_Step(
    ${V8ProjectName}
    v8_build
-   COMMAND ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} ninja -C out.gn/x64.${BuildType}
+   COMMAND ${BuildCommand}
    COMMENT "Build v8 engine"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES configure
@@ -96,6 +104,8 @@ elseif (UNIX)
    copy_binary(libv8 libv8.so lib)
    copy_binary(libicuuc libicuuc.so lib)
    copy_binary(libicui18n libicui18n.so lib)
+else()
+   copy_binary(v8_shell v8_shell.exe bin)
 endif(APPLE)
 
 ExternalProject_Add_Step(

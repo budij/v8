@@ -42,8 +42,11 @@ else ()
    set(ENV{PATH} "${DepotToolsLocation}:$ENV{PATH}")
 endif(WIN32)
 
+set(PathEnv "${DepotToolsLocation}$<SEMICOLON>!PATH!")
+
 add_subdirectory(depot_tools)
 add_subdirectory(v8)
 
 message(STATUS "DepotToolsLocation: ${DepotToolsLocation}")
-message(STATUS "Path: $ENV{PATH}")
+message(STATUS "Path:               $ENV{PATH}")
+message(STATUS "PathEnv:            ${PathEnv}")
