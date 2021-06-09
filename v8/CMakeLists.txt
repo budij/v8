@@ -126,8 +126,8 @@ else()
    copy_binary(icui18n_lib icui18n.dll.lib lib)
    copy_binary(icuuc_lib icuuc.dll.lib lib)
    copy_binary(v8_lib v8.dll.lib lib)
-   copy_binary(v8_libbase v8_libbase.dll.lib lib)
-   copy_binary(v8_libplatform v8_libplatform.dll.lib lib)
+   copy_binary(v8_libbase_lib v8_libbase.dll.lib lib)
+   copy_binary(v8_libplatform_lib v8_libplatform.dll.lib lib)
 endif(APPLE)
 
 ExternalProject_Add_Step(
