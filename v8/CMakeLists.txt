@@ -28,6 +28,7 @@ if (WIN32)
    set(FetchCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/fetch.bat v8")
    set(SyncCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/gclient.bat sync")
    set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true")
+   set(UpdateZLibBuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${CMAKE_SOURCE_DIR}/scripts/UpdateZLib.bat")
    set(BuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/ninja.exe -C out.gn/x64.${BuildType}")
 else()
    set(FetchCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/fetch" v8)
@@ -64,6 +65,18 @@ ExternalProject_Add_Step(
    DEPENDEES sync_client
    DEPENDERS configure
 )
+
+if (WIN32)
+   ExternalProject_Add_Step(
+      ${V8ProjectName}
+      update_zlib_build
+      COMMAND ${UpdateZLibBuildCommand}
+      COMMENT "Update ZLib command to rename the output file"
+      WORKING_DIRECTORY ${V8Dir}
+      DEPENDEES generate_build_script
+      DEPENDERS configure
+   )
+endif(WIN32)
 
 ExternalProject_Add_Step(
    ${V8ProjectName}
@@ -121,13 +134,14 @@ else()
    copy_binary(v8_libplatform v8_libplatform.dll bin)
    copy_binary(msvcp140 msvcp140.dll bin)
    copy_binary(libcpp libc++.dll bin)
-   copy_binary(zlib zlib.dll bin)
+   copy_binary(chrome_zlib chrome_zlib.dll bin)
 
    copy_binary(icui18n_lib icui18n.dll.lib lib)
    copy_binary(icuuc_lib icuuc.dll.lib lib)
    copy_binary(v8_lib v8.dll.lib lib)
    copy_binary(v8_libbase_lib v8_libbase.dll.lib lib)
    copy_binary(v8_libplatform_lib v8_libplatform.dll.lib lib)
+   copy_binary(chrome_zlib_lib chrome_zlib.dll.lib lib)
 endif(APPLE)
 
 ExternalProject_Add_Step(
