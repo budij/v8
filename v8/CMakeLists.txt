@@ -89,6 +89,7 @@ endfunction(copy_binary)
 make_directory(${V8InstallDir}/bin)
 make_directory(${V8InstallDir}/lib)
 make_directory(${V8InstallDir}/include)
+make_directory(${V8InstallDir}/include/v8)
 copy_binary(snapshot_blob snapshot_blob.bin bin)
 
 if (APPLE)
@@ -133,8 +134,8 @@ endif(APPLE)
 ExternalProject_Add_Step(
    ${V8ProjectName}
    copy_header_files
-   COMMAND ${CMAKE_COMMAND} -E copy_directory ${V8Dir}/include ${V8InstallDir}/include
-   COMMENT "Copy include files from ${V8Dir}/out.gn/x64.${BuildType}/include to ${V8InstallDir}/include"
+   COMMAND ${CMAKE_COMMAND} -E copy_directory ${V8Dir}/include ${V8InstallDir}/include/v8
+   COMMENT "Copy include files from ${V8Dir}/out.gn/x64.${BuildType}/include to ${V8InstallDir}/include/v8"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES build
 )
