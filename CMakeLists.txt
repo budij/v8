@@ -47,6 +47,7 @@ set(PathEnv "${DepotToolsLocation}$<SEMICOLON>!PATH!")
 add_subdirectory(depot_tools)
 add_subdirectory(v8)
 
+message(STATUS "CMAKE_SOURCE_DIR:   ${CMAKE_SOURCE_DIR}")
 message(STATUS "DepotToolsLocation: ${DepotToolsLocation}")
 message(STATUS "Path:               $ENV{PATH}")
 message(STATUS "PathEnv:            ${PathEnv}")

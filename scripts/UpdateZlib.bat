@@ -1,0 +1,1 @@
+call perl -0pi.bak -e "s/(component\(\"zlib\"\)\s+{.*if.*!is_win)(\).*# Don)/$1 || is_win$2/smg" third_party\zlib\BUILD.gn
