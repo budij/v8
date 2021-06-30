@@ -1,5 +1,8 @@
 include(ExternalProject)
 
+# List of all gn arguments for Chromium build
+# https://gitlab.com/noencoding/OS-X-Chromium-with-proprietary-codecs/-/wikis/List-of-all-gn-arguments-for-Chromium-build
+
 set(V8ProjectName project_V8)
 set(V8Dir ${V8SourceDir}/v8)
 set(V8InstallDir ${CMAKE_INSTALL_PREFIX})
