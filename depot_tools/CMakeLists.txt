@@ -5,6 +5,7 @@ set(DepotToolsUrl "https://chromium.googlesource.com/chromium/tools/depot_tools.
 ExternalProject_Add(
    ${DepotToolsProjectName}
    GIT_REPOSITORY  ${DepotToolsUrl}
+   GIT_TAG main
    GIT_SHALLOW YES
    GIT_PROGRESS YES
    SOURCE_DIR ${DepotToolsSource}
