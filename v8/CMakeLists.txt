@@ -30,7 +30,9 @@ ExternalProject_Add(
 if (WIN32)
    set(FetchCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/fetch.bat v8")
    set(SyncCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/gclient.bat sync")
-   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true")
+   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo 
+PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- is_component_build=true use_goma=false 
+v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true is_clang=false")
    set(UpdateZLibBuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${CMAKE_SOURCE_DIR}/scripts/UpdateZLib.bat")
    set(BuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/ninja.exe -C out.gn/x64.${BuildType}")
 else()
