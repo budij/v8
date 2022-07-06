@@ -42,6 +42,11 @@ else ()
    set(ENV{PATH} "${DepotToolsLocation}:$ENV{PATH}")
 endif(WIN32)
 
+if (NOT WIN32)
+   find_package(Python3 REQUIRED)
+   find_package(PkgConfig REQUIRED)
+ENDIF(NOT WIN32)
+
 set(PathEnv "${DepotToolsLocation}$<SEMICOLON>!PATH!")
 
 add_subdirectory(depot_tools)
