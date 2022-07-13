@@ -44,8 +44,8 @@ SET buildType=%~3
 
 CD "%buildDirName%"
 ECHO Directory %buildDirName% 2>&1 | tee build.log
-ECHO Executing: cmake -G "Visual Studio 16 2019" -A x64 %sourceDir% -DCMAKE_BUILD_TYPE=%buildType% %4 2>&1 | tee -a build.log
-CALL cmake -G "Visual Studio 16 2019" -A x64 %sourceDir% -DCMAKE_BUILD_TYPE=%buildType% %4 2>&1 | tee -a build.log
+ECHO Executing: cmake -G "Visual Studio 17 2022" -A x64 %sourceDir% -DCMAKE_BUILD_TYPE=%buildType% %4 2>&1 | tee -a build.log
+CALL cmake -G "Visual Studio 17 2022" -A x64 %sourceDir% -DCMAKE_BUILD_TYPE=%buildType% %4 2>&1 | tee -a build.log
 ECHO Executing: cmake --build . --config %buildType% 2>&1 | tee -a build.log
 CALL cmake --build . --config %buildType% 2>&1 | tee -a build.log
 

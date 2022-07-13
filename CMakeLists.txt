@@ -42,6 +42,7 @@ else ()
    set(ENV{PATH} "${DepotToolsLocation}:$ENV{PATH}")
 endif(WIN32)
 
+# Find required packages
 if (NOT WIN32)
    find_package(Python3 REQUIRED)
    find_package(PkgConfig REQUIRED)

@@ -28,13 +28,16 @@ ExternalProject_Add(
 )
 
 if (WIN32)
+   # I used this instruction to get this to work for Windows
+   # https://stackoverflow.com/questions/67041878/how-do-i-embed-v8-on-windows
+   # Apparently, the build for dll for Windows platform using MSVC is always broken.
+   # So, we need to build it as a static lib into v8_monolith.lib that can be linked to an application
+
    set(FetchCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/fetch.bat v8")
    set(SyncCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/gclient.bat sync")
-   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo 
-PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- is_component_build=true use_goma=false 
-v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true is_clang=false")
+   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- is_debug=false is_component_build=false v8_monolithic=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true is_clang=false v8_use_external_startup_data=false")
    set(UpdateZLibBuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${CMAKE_SOURCE_DIR}/scripts/UpdateZLib.bat")
-   set(BuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/ninja.exe -C out.gn/x64.${BuildType}")
+   set(BuildCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/ninja.exe -C out.gn/x64.${BuildType} v8_monolith")
 else()
    set(FetchCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/fetch" v8)
    set(SyncCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/gclient" sync)
@@ -145,37 +148,17 @@ elseif (UNIX)
    copy_binary(libv8_libbase                libv8_libbase.so                   lib libv8_libbase.so)
    copy_binary(libv8_libplatform            libv8_libplatform.so               lib libv8_libplatform.so)
 else()
-   copy_binary(d8                d8.exe                  bin d8.exe)
-   copy_binary(v8_shell          v8_shell.exe            bin v8_shell.exe)
-   copy_binary(msvcp140          msvcp140.dll            bin msvcp140.dll)
-   copy_binary(cpp               libc++.dll              bin libc++.dll)
-   copy_binary(chrome_zlib       chrome_zlib.dll         bin chrome_zlib.dll)
-   copy_binary(cppgc             cppgc.dll               bin cppgc.dll)
-   copy_binary(icui18n           icui18n.dll             bin icui18n.dll)
-   copy_binary(icuuc             icuuc.dll               bin icuuc.dll)
-   copy_binary(v8_libbase        v8_libbase.dll          bin v8_libbase.dll)
-   copy_binary(v8_libplatform    v8_libplatform.dll      bin v8_libplatform.dll)
-   copy_binary(v8                v8.dll                  bin v8.dll)
+   copy_binary(dbgcore                      dbgcore.dll                        bin dbgcore.dll)
+   copy_binary(dbghelp                      dbghelp.dll                        bin dbghelp.dll)
+   copy_binary(msvcp140                     msvcp140.dll                       bin msvcp140.dll)
+   copy_binary(ucrtbase                     ucrtbase.dll                       bin ucrtbase.dll)
+   copy_binary(vccorlib140                  vccorlib140.dll                    bin vccorlib140.dll)
+   copy_binary(vcruntime140                 vcruntime140.dll                   bin vcruntime140.dll)
+   copy_binary(vcruntime140_1               vcruntime140_1.dll                 bin vcruntime140_1.dll)
 
-   copy_binary(pdbd8             d8.exe.pdb              bin d8.exe.pdb)
-   copy_binary(pdbv8_shell       v8_shell.exe.pdb        bin v8_shell.exe.pdb)
-   copy_binary(pdbcpp            libc++.dll.pdb          bin libc++.dll.pdb)
-   copy_binary(pdbchrome_zlib    chrome_zlib.dll.pdb     bin chrome_zlib.dll.pdb)
-   copy_binary(pdbcppgc          cppgc.dll.pdb           bin cppgc.dll.pdb)
-   copy_binary(pdbicui18n        icui18n.dll.pdb         bin icui18n.dll.pdb)
-   copy_binary(pdbicuuc          icuuc.dll.pdb           bin icuuc.dll.pdb)
-   copy_binary(pdbv8_libbase     v8_libbase.dll.pdb      bin v8_libbase.dll.pdb)
-   copy_binary(pdbv8_libplatform v8_libplatform.dll.pdb  bin v8_libplatform.dll.pdb)
-   copy_binary(pdbv8             v8.dll.pdb              bin v8.dll.pdb)
-
-   copy_binary(libcpp            libc++.dll.lib          lib libc++.dll.lib)
-   copy_binary(libchrome_zlib    chrome_zlib.dll.lib     lib chrome_zlib.dll.lib)
-   copy_binary(libcppgc          cppgc.dll.lib           lib cppgc.dll.lib)
-   copy_binary(libicui18n        icui18n.dll.lib         lib icui18n.dll.lib)
-   copy_binary(libicuuc          icuuc.dll.lib           lib icuuc.dll.lib)
-   copy_binary(libv8_libbase     v8_libbase.dll.lib      lib v8_libbase.dll.lib)
-   copy_binary(libv8_libplatform v8_libplatform.dll.lib  lib v8_libplatform.dll.lib)
-   copy_binary(libv8             v8.dll.lib              lib v8.dll.lib)
+   copy_binary(libv8_libbase                v8_libbase.lib                     lib v8_libbase.lib)
+   copy_binary(libv8_libplatform            v8_libplatform.lib                 lib v8_libplatform.lib)
+   copy_binary(libv8_monolith               v8_monolith.lib                    lib v8_monolith.lib)
 endif(APPLE)
 
 ExternalProject_Add_Step(
