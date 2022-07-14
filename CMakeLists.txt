@@ -16,6 +16,7 @@ set(VERSION_PATCH                     "0")
 set(VERSION                           "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 set(CMAKE_INSTALL_RPATH               "$ORIGIN/../lib:$ORIGIN/")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+set(CMAKE_MODULE_PATH                 ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Override the install path if not specified
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -35,6 +36,7 @@ set(DepotToolsProjectName project_depot_tools)
 set(DepotToolsSource ${CMAKE_CURRENT_BINARY_DIR}/dt)
 set(DepotToolsLocation ${DepotToolsSource})
 set(V8SourceDir ${CMAKE_CURRENT_BINARY_DIR}/vs)
+set(V8InstallDir ${CMAKE_INSTALL_PREFIX})
 
 if (WIN32)
    set(ENV{PATH} "${DepotToolsLocation};$ENV{PATH}")
@@ -50,8 +52,11 @@ ENDIF(NOT WIN32)
 
 set(PathEnv "${DepotToolsLocation}$<SEMICOLON>!PATH!")
 
+include(_FindV8_)
+
 add_subdirectory(depot_tools)
 add_subdirectory(v8)
+#add_subdirectory(example)
 
 message(STATUS "CMAKE_SOURCE_DIR:   ${CMAKE_SOURCE_DIR}")
 message(STATUS "DepotToolsLocation: ${DepotToolsLocation}")

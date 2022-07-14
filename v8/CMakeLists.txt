@@ -5,7 +5,6 @@ include(ExternalProject)
 
 set(V8ProjectName project_V8)
 set(V8Dir ${V8SourceDir}/v8)
-set(V8InstallDir ${CMAKE_INSTALL_PREFIX})
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
    set(BuildType debug)
