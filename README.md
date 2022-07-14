@@ -12,6 +12,7 @@ These are the list of software application that are required to be installed on 
 
 ## Required for Windows
 * Visual Studio 2019 (Windows)
+* Windows SDK - 10.1.20348.0
 
 ## Required for Ubuntu
 * gcc (linux version 9.3.0)

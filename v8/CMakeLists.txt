@@ -111,9 +111,9 @@ make_directory(${V8InstallDir}/bin)
 make_directory(${V8InstallDir}/lib)
 make_directory(${V8InstallDir}/include)
 make_directory(${V8InstallDir}/include/v8)
-copy_binary(snapshot_blob snapshot_blob.bin bin snapshot_blob.bin)
 
 if (APPLE)
+   copy_binary(snapshot_blob snapshot_blob.bin bin snapshot_blob.bin)
    copy_binary(d8                           d8                                 bin d8)
    copy_binary(v8_shell                     v8_shell                           bin v8_shell)
 
@@ -131,6 +131,7 @@ if (APPLE)
    copy_binary(libv8_libbase                libv8_libbase.dylib                lib libv8_libbase.dylib)
    copy_binary(libv8_libplatform            libv8_libplatform.dylib            lib libv8_libplatform.dylib)
 elseif (UNIX)
+   copy_binary(snapshot_blob snapshot_blob.bin bin snapshot_blob.bin)
    copy_binary(d8                           d8                                 bin d8)
    copy_binary(v8_shell                     v8_shell                           bin v8_shell)
 
@@ -156,16 +157,16 @@ else()
    copy_binary(vcruntime140                 vcruntime140.dll                   bin vcruntime140.dll)
    copy_binary(vcruntime140_1               vcruntime140_1.dll                 bin vcruntime140_1.dll)
 
-   copy_binary(libv8_libbase                v8_libbase.lib                     lib v8_libbase.lib)
-   copy_binary(libv8_libplatform            v8_libplatform.lib                 lib v8_libplatform.lib)
-   copy_binary(libv8_monolith               v8_monolith.lib                    lib v8_monolith.lib)
+   copy_binary(libv8_libbase                obj/v8_libbase.lib                 lib v8_libbase.lib)
+   copy_binary(libv8_libplatform            obj/v8_libplatform.lib             lib v8_libplatform.lib)
+   copy_binary(libv8_monolith               obj/v8_monolith.lib                lib v8_monolith.lib)
 endif(APPLE)
 
 ExternalProject_Add_Step(
    ${V8ProjectName}
    copy_header_files
    COMMAND ${CMAKE_COMMAND} -E copy_directory ${V8Dir}/include ${V8InstallDir}/include/v8
-   COMMENT "Copy include files from ${V8Dir}/out.gn/x64.${BuildType}/include to ${V8InstallDir}/include/v8"
+   COMMENT "Copy include files from ${V8Dir}/include to ${V8InstallDir}/include/v8"
    WORKING_DIRECTORY ${V8Dir}
    DEPENDEES build
 )
