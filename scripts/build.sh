@@ -59,6 +59,8 @@ build_v8()
    cmake -G "Unix Makefiles" $sourceDir -DCMAKE_BUILD_TYPE=$buildType $options 2>&1 | tee -a build.log
    echo Executing: cmake --build . --config $buildType 2>&1 | tee -a build.log
    cmake --build . --config $buildType 2>&1 | tee -a build.log
+   echo Executing: cmake --build . --config $buildType --target install 2>&1 | tee -a build.log
+   cmake --build . --config $buildType --target install 2>&1 | tee -a build.log
 
    # Check if the build is successful
    currentBuildDir=${PWD}

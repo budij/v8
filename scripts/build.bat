@@ -48,6 +48,8 @@ ECHO Executing: cmake -G "Visual Studio 17 2022" -A x64 %sourceDir% -DCMAKE_BUIL
 CALL cmake -G "Visual Studio 17 2022" -A x64 %sourceDir% -DCMAKE_BUILD_TYPE=%buildType% %4 2>&1 | tee -a build.log
 ECHO Executing: cmake --build . --config %buildType% 2>&1 | tee -a build.log
 CALL cmake --build . --config %buildType% 2>&1 | tee -a build.log
+ECHO Executing: cmake --build . --config %buildType% --target install 2>&1 | tee -a build.log
+CALL cmake --build . --config %buildType% --target install 2>&1 | tee -a build.log
 
 REM Check if the build is successful
 SET CurrentBuildDir=%CD%
