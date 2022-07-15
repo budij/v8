@@ -9,8 +9,7 @@ function(FindV8_Func)
    set(V8_LIBS_DIR ${V8_ROOT_DIR}/lib)
 
    if (APPLE)
-      set(V8_LIBRARIES ${V8_ROOT_DIR}/lib/libc++_chrome.dylib
-                       ${V8_ROOT_DIR}/lib/libchrome_zlib.dylib
+      set(V8_LIBRARIES ${V8_ROOT_DIR}/lib/libchrome_zlib.dylib
                        ${V8_ROOT_DIR}/lib/libcppgc.dylib
                        ${V8_ROOT_DIR}/lib/libicui18n.dylib
                        ${V8_ROOT_DIR}/lib/libicuuc.dylib
@@ -37,6 +36,7 @@ function(FindV8_Func)
    target_sources(${V8Proj} INTERFACE $<BUILD_INTERFACE:${${V8Proj}_headers}>)
    target_include_directories(${V8Proj} SYSTEM INTERFACE "$<BUILD_INTERFACE:${V8_INCLUDE_DIR}/v8>")
    target_link_libraries(${V8Proj} INTERFACE "$<BUILD_INTERFACE:${V8_LIBRARIES}>")
+   target_compile_definitions(${V8Proj} INTERFACE V8_COMPRESS_POINTERS V8_ENABLE_SANDBOX)
 endfunction()
 
 FindV8_Func()

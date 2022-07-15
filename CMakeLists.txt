@@ -19,6 +19,10 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 set(CMAKE_MODULE_PATH                 ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_CXX_STANDARD                17)
 
+if (APPLE)
+   set(CMAKE_INSTALL_RPATH            "@loader_path/../lib;@loader_path/")
+endif(APPLE)
+
 # Override the install path if not specified
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
    get_filename_component(InstallPrefix "${CMAKE_CURRENT_BINARY_DIR}/install" ABSOLUTE )
