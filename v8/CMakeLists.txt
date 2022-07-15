@@ -33,7 +33,7 @@ if (WIN32)
    # https://stackoverflow.com/questions/67041878/how-do-i-embed-v8-on-windows
    # Apparently, the build for dll for Windows platform using MSVC is always broken.
    # So, we need to build it as a static lib into v8_monolith.lib that can be linked to an application
-
+   set(PathEnv "${DepotToolsLocation}$<SEMICOLON>!PATH!")
    set(FetchCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/fetch.bat v8")
    set(SyncCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/gclient.bat sync")
    set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env cmd /V /C "set DEPOT_TOOLS_WIN_TOOLCHAIN=0 && set PATH=${PathEnv} && echo PATH=!PATH! && ${DepotToolsLocation}/python.bat tools/dev/v8gen.py x64.${BuildType} -vv -- ${IsDebug} is_component_build=false v8_monolithic=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true is_clang=false v8_use_external_startup_data=false")
@@ -42,7 +42,7 @@ if (WIN32)
 else()
    set(FetchCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/fetch" v8)
    set(SyncCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" "${DepotToolsLocation}/gclient" sync)
-   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" python3 tools/dev/v8gen.py x64.${BuildType} -- ${IsDebug} is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true)
+   set(GenerateBuildScriptCommand ${CMAKE_COMMAND} -E env PATH="$ENV{PATH}" python3 tools/dev/v8gen.py x64.${BuildType} -- ${IsDebug} is_component_build=true use_goma=false v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true use_custom_libcxx=false use_custom_libcxx_for_host=false)
    set(BuildCommand ${CMAKE_COMMAND} -E env PATH=$ENV{PATH} ninja -C out.gn/x64.${BuildType})
 endif(WIN32)
 
@@ -118,7 +118,6 @@ if (APPLE)
    copy_binary(d8                           d8                                 bin d8)
    copy_binary(v8_shell                     v8_shell                           bin v8_shell)
 
-   copy_binary(libcpp_chrome                libc++_chrome.dylib                lib libc++_chrome.dylib)
    copy_binary(libchrome_zlib               libchrome_zlib.dylib               lib libchrome_zlib.dylib)
    copy_binary(libcppgc                     libcppgc.dylib                     lib libcppgc.dylib)
    copy_binary(libicui18n                   libicui18n.dylib                   lib libicui18n.dylib)

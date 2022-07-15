@@ -35,7 +35,7 @@ function(FindV8_Func)
 
    set (${V8Proj}_headers $<1:${V8_INCLUDE_DIR}/v8/v8.h>)
    target_sources(${V8Proj} INTERFACE $<BUILD_INTERFACE:${${V8Proj}_headers}>)
-   target_include_directories(${V8Proj} SYSTEM INTERFACE "$<BUILD_INTERFACE:${V8_INCLUDE_DIR}>")
+   target_include_directories(${V8Proj} SYSTEM INTERFACE "$<BUILD_INTERFACE:${V8_INCLUDE_DIR}/v8>")
    target_link_libraries(${V8Proj} INTERFACE "$<BUILD_INTERFACE:${V8_LIBRARIES}>")
 endfunction()
 
