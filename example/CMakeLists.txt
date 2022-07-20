@@ -36,8 +36,7 @@ endif(APPLE)
 include(_FindV8_)
 
 # Set up files
-#set (\${PROJECT_NAME}_sources ${CMAKE_BINARY_DIR}/vs/v8/samples/hello-world.cc)
-set (\${PROJECT_NAME}_sources ${CMAKE_CURRENT_LIST_DIR}/hello-world.cc)
+set (\${PROJECT_NAME}_sources ${CMAKE_BINARY_DIR}/vs/v8/samples/hello-world.cc)
 
 # create binaries
 # ---------------
@@ -48,7 +47,8 @@ if (UNIX AND NOT APPLE)
    target_link_libraries(\${PROJECT_NAME} INTERFACE stdc++fs)
 endif(UNIX AND NOT APPLE)
 
-#include_directories(\${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:$<1:${CMAKE_CURRENT_LIST_DIR}>>)
+include_directories(\${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:$<1:${CMAKE_BINARY_DIR}/vs/v8/samples>
+                                                                 $<1:${CMAKE_BINARY_DIR}/vs/v8>>)
 
 # Adding install destination
 # --------------------------
