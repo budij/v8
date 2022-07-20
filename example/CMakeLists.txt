@@ -28,6 +28,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 set(CMAKE_MODULE_PATH                 ${CMAKE_MODULE_PATH} \"${CmakeSourceDir}/cmake\")
 set(CMAKE_CXX_STANDARD                17)
 set(V8InstallDir                      \"${V8InstallDir}\")
+set(CMAKE_MSVC_RUNTIME_LIBRARY        \"MultiThreaded$<$<CONFIG:Debug>:Debug>\")
 
 if (APPLE)
    set(CMAKE_INSTALL_RPATH            \"@loader_path/../lib;@loader_path/\")
@@ -44,7 +45,9 @@ add_executable(\${PROJECT_NAME} \${\${PROJECT_NAME}_sources})
 target_link_libraries(\${PROJECT_NAME} PRIVATE V8Lib)
 
 if (UNIX AND NOT APPLE)
-   target_link_libraries(\${PROJECT_NAME} INTERFACE stdc++fs)
+   target_link_libraries(\${PROJECT_NAME} PRIVATE stdc++fs)
+elseif (WIN32)
+   target_link_libraries(\${PROJECT_NAME} PRIVATE dbghelp.lib;winmm.lib;ws2_32.lib)
 endif(UNIX AND NOT APPLE)
 
 include_directories(\${PROJECT_NAME} INTERFACE $<BUILD_INTERFACE:$<1:${CMAKE_BINARY_DIR}/vs/v8/samples>
