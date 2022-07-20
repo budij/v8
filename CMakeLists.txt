@@ -42,6 +42,7 @@ set(DepotToolsSource ${CMAKE_CURRENT_BINARY_DIR}/dt)
 set(DepotToolsLocation ${DepotToolsSource})
 set(V8SourceDir ${CMAKE_CURRENT_BINARY_DIR}/vs)
 set(V8InstallDir ${CMAKE_INSTALL_PREFIX})
+set(V8ProjectName project_V8)
 
 if (WIN32)
    set(ENV{PATH} "${DepotToolsLocation};$ENV{PATH}")
@@ -54,8 +55,6 @@ if (NOT WIN32)
    find_package(Python3 REQUIRED)
    find_package(PkgConfig REQUIRED)
 ENDIF(NOT WIN32)
-
-include(_FindV8_)
 
 add_subdirectory(depot_tools)
 add_subdirectory(v8)
