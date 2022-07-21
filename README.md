@@ -1,64 +1,67 @@
 # V8
 
-Steps to build V8 from this location: https://github.com/V8/V8
-The current release of V8 is 9.1.0
+This repository provides the cmake files required to compile and build V8 engine. The latest version of V8 that has been tested is version 9.9.0. And, the operating systems that have been tested with the script is Windows, Ubuntu, and MacOS.
 
 # Prerequisites
-These are the list of software application that are required to be installed on the build machine. For more information, please refer to the setup instructions with the respective platforms: [Ubuntu](docs/ubuntu-setup.md) or [Windows](docs/windows-setup.md).
+These are the list of software application that are required to be installed on the build machine.
 
-## Required for all platforms:
+## Required for all platforms
 * Cmake 3.18.3 and above
 * git (latest version)
 
 ## Required for Windows
-* Visual Studio 2019 (Windows)
+* Visual Studio 2019 or above
 * Windows SDK - 10.1.20348.0
 
 ## Required for Ubuntu
 * gcc (linux version 9.3.0)
 * g++ (linux version 9.3.0)
+* Python 3
+* PkgConfig
 
-# Development with CMake
-The project can be configured and built using the CMake tool.
+## Required for MacOS
+* clang
+* Python 3
+* PkgConfig
 
-## Configuration
-Assuming that the project is checked out in the following *~/projects/v8*, you can execute the following command to configure the cmake project:
+# Building using cmake
+There are 2 ways to build this project. Scripts are provided in the [root]/scripts folder for users to easily compile the project. However, users can also choose to manuall configure cmake and build the project. The following steps assumes that the checkout directory for this project is in *~/projects/v8*, and the build directory is in *~/projects/build*.
 
-### Unix makefile
-```shell
-cmake -G "Unix Makefiles" ~/projects/v8 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=path/to/install/directory
+An example project will also be built to show an example of the cmake file that can be used to compile V8 on other projects. Please review the content of *~/projects/v8/examples/CMakeList.txt* file, and the generated *~/projects/build/v8/GNU/example/Example-source/CMakeList.txt*.
+
+## Using scripts
+1. Create a build directory.
+```
+mkdir ~/projects/build
+cd ~/projects/build
 ```
 
-### Visual studio example
+2. Execute the script from the build directory. The command for both batch and shell scripts are the same. The example below uses shell script example, but the same can be applied in a Windows environment using a batch script. Once the build starts, it will create *v8/GNU* for Linux and MacOS environment, or *v8/MSVC* for Windows environment.
+```shell
+~/projects/v8/scripts/build.sh
+```
+
+3. Wait for the build to complete. Once the build is completed, the output files can be found in the *install/bin* (for binaries), *install/include* (for include headers), and *install/lib* (for the lib files) directories.
+
+## Manually using cmake
+1. Configure the project.
+```shell
+# Unix makefile for linux and MacOS environment
+cd ~/projects/build
+cmake -G "Unix Makefiles" ~/projects/v8 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=path/to/install/directory
+```
 ```batch
+REM Visual studio for Windows environment
+cd ~/projects/build
 cmake -G "Visual Studio 16 2019" -A x64 projects\v8 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=path\to\install\directory
 ```
 
-## Building project
-You can then build the project from the directory where you execute the above command. This command can be executed as is, regardless of the platform.
-
+2. Build the project from the *~/projects/build* directory.
 ```shell
 cmake --build . --config Release
 ```
 
-### Scripts
-Scripts for linux and windows have been provided in the Scripts directory. Follow the examples below to build using the provided script. Assumption is that there is a builddir where the build is supposed to happen.
-
-### Unix script
-```shell
-cd builddir
-~/projects/v8/script/build.sh
-```
-
-### Windows script
-When using the batch script, the script assumes that Visual Studio 2022 is installed. But, if it is not installed, please update the cmake command to use Visual Studio 2019 instead.
-```batch
-cd builddir
-C:\projects\v8\script\build.bat
-```
-
-## Produced binaries
-The location of the binaries is located in the directory specified by CMAKE_INSTALL_PREFIX option above. If that option is not specified, it is located in the **install** directory where the command above was run.
+3. Wait for the build to complete. Once the build is completed, the output files can be found in the *install/bin* (for binaries), *install/include* (for include headers), and *install/lib* (for the lib files) directories.
 
 ## Build options and their default values
 The following is the options that you can use on the command line to override the build:
